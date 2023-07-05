@@ -1,21 +1,31 @@
 import { test, expect } from '@playwright/test';
+const url = 'https://demo-bank.vercel.app/'
 test.describe('Pulpit test', () => {
     test('Send a quick transfer from the dashboard', async ({ page }) => {
-        await page.goto('https://demo-bank.vercel.app/');
-        await page.getByTestId('login-input').fill('ltesterl');
-        await page.getByTestId('password-input').fill('password');
-        await page.getByTestId('login-button').click();
+        //Arrange
+        const userName = 'ltesterl';
+        const userPassword = 'qwertyuy';
+        const recieverId = '2';
+        const transferAmount = '150';
+        const transferTitle = 'pizza';
+        const expectedTransferReciever = 'Chuck Demobankowy'
 
-        await page.locator('#widget_1_transfer_receiver').selectOption('2');
-        await page.locator('#widget_1_transfer_amount').fill('150');
-        await page.locator('#widget_1_transfer_title').fill('pizza');
+        //Act
+        await page.goto(url);
+        await page.getByTestId('login-input').fill(userName);
+        await page.getByTestId('password-input').fill(userPassword);
+        await page.getByTestId('login-button').click();
+        await page.locator('#widget_1_transfer_receiver').selectOption(recieverId);
+        await page.locator('#widget_1_transfer_amount').fill(transferAmount);
+        await page.locator('#widget_1_transfer_title').fill(transferTitle);
         await page.getByRole('button', { name: 'wykonaj' }).click();
         await page.getByTestId('close-button').click();
-        await expect(page.getByRole('link', { name: 'Przelew wykonany! Chuck Demobankowy - 150,00PLN - pizza' })).toBeVisible()
-        await expect(page.locator('#show_messages')).toHaveText('Przelew wykonany! Chuck Demobankowy - 150,00PLN - pizza')
+        //Assert
+        await expect(page.getByRole('link', { name: `Przelew wykonany! ${expectedTransferReciever} - ${transferAmount},00PLN - ${transferTitle}` })).toBeVisible()
+        await expect(page.locator('#show_messages')).toHaveText(`Przelew wykonany! ${expectedTransferReciever} - ${transferAmount},00PLN - ${transferTitle}`)
     })
     test('Successfull phone top-up from the dashboard', async ({ page }) => {
-        await page.goto('https://demo-bank.vercel.app/');
+        await page.goto(url);
         await page.getByTestId('login-input').fill('ltesterl');
         await page.getByTestId('password-input').fill('password');
         await page.getByTestId('login-button').click();
