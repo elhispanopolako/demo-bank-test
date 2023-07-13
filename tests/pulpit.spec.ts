@@ -7,8 +7,10 @@ const recieverId = '2';
 const transferAmount = '150';
 const transferTitle = 'pizza';
 const expectedTransferReciever = 'Chuck Demobankowy'
-const phoneNumberForTopUp = '500 xxx xxx'
+const topUpReciever = '500 xxx xxx'
 const topUpAmount = '2121'
+const expectedTransferMessage = `Przelew wykonany! ${expectedTransferReciever} - ${transferAmount},00PLN - ${transferTitle}`;
+const expectedTopUpMessage = `Doładowanie wykonane! ${topUpAmount},00PLN na numer ${topUpReciever}`;
 
 test.describe('Pulpit test', () => {
     test.beforeEach(async ({ page }) => {
@@ -25,17 +27,17 @@ test.describe('Pulpit test', () => {
         await page.getByRole('button', { name: 'wykonaj' }).click();
         await page.getByTestId('close-button').click();
         //Assert
-        await expect(page.getByRole('link', { name: `Przelew wykonany! ${expectedTransferReciever} - ${transferAmount},00PLN - ${transferTitle}` })).toBeVisible()
-        await expect(page.locator('#show_messages')).toHaveText(`Przelew wykonany! ${expectedTransferReciever} - ${transferAmount},00PLN - ${transferTitle}`)
+        await expect(page.getByRole('link', { name: expectedTransferMessage })).toBeVisible()
+        await expect(page.locator('#show_messages')).toHaveText(expectedTransferMessage)
     })
     test('Successfull phone top-up from the dashboard', async ({ page }) => {
         //Act
-        await page.locator('#widget_1_topup_receiver').selectOption(phoneNumberForTopUp);
+        await page.locator('#widget_1_topup_receiver').selectOption(topUpReciever);
         await page.locator('#widget_1_topup_amount').fill(topUpAmount);
         await page.locator('#uniform-widget_1_topup_agreement span').click();
         await page.getByRole('button', { name: 'doładuj telefon' }).click();
         await page.getByTestId('close-button').click();
         //Assert
-        await expect(page.locator('#show_messages')).toHaveText(`Doładowanie wykonane! ${topUpAmount},00PLN na numer ${phoneNumberForTopUp}`);
+        await expect(page.locator('#show_messages')).toHaveText(expectedTopUpMessage);
     })
 })
